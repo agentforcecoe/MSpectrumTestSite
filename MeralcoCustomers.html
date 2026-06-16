@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Meralco Customers</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #0070d2;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .loading {
+            text-align: center;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        .error {
+            color: red;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Meralco Customers</h2>
+
+    <div id="status" class="loading">Loading customers...</div>
+
+    <table id="customerTable" style="display:none;">
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Location</th>
+                <th>CAN</th>
+                <th>SIN</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        const API_URL = "https://6a2bdb973e2b60ab038eefdd.mockapi.io/mspectrumdemo/v1/getMeralcoCustomers";
+
+        async function fetchCustomers() {
+            try {
+                const response = await fetch(API_URL);
+
+                if (!response.ok) {
+                    throw new Error("Failed to fetch data");
+                }
+
+                const customers = await response.json();
+                populateTable(customers);
+
+            } catch (error) {
+                document.getElementById("status").innerText = "Error loading data";
+                document.getElementById("status").classList.add("error");
+                console.error(error);
+            }
+        }
+
+        function populateTable(customers) {
+            const table = document.getElementById("customerTable");
+            const tbody = table.querySelector("tbody");
+
+            tbody.innerHTML = "";
+
+            customers.forEach(customer => {
+                const row = `
+                    <tr>
+                        <td>${customer.firstName || ''}</td>
+                        <td>${customer.lastName || ''}</td>
+                        <td>${customer.email || ''}</td>
+                        <td>${customer.phone || ''}</td>
+                        <td>${customer.location || ''}</td>
+                        <td>${customer.CAN || ''}</td>
+                        <td>${customer.SIN || ''}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+
+            document.getElementById("status").style.display = "none";
+            table.style.display = "table";
+        }
+
+        // Call API on page load
+        fetchCustomers();
+    </script>
+
+</body>
+</html>
